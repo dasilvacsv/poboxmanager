@@ -1,18 +1,26 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Package, Users, FileText, TrendingUp, Calendar, AlertCircle, CheckCircle, Clock } from "lucide-react"
+import {
+  Package,
+  Users,
+  FileText,
+  TrendingUp,
+  Calendar,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Building,
+  DollarSign,
+} from "lucide-react"
 
 export default function DashboardPage() {
   return (
     <div className="p-6 space-y-6">
-      {/* Welcome Section */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h1>
-            <p className="text-blue-100 text-lg">
-              Aquí tienes un resumen de la actividad de hoy
-            </p>
+            <p className="text-blue-100 text-lg">Panel de control empresarial - Gestión avanzada</p>
           </div>
           <div className="hidden md:block">
             <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center">
@@ -22,7 +30,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-blue-100/50 border-l-4 border-l-blue-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -58,16 +65,16 @@ export default function DashboardPage() {
 
         <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-orange-50 to-orange-100/50 border-l-4 border-l-orange-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-semibold text-orange-800">Facturas Pendientes</CardTitle>
+            <CardTitle className="text-sm font-semibold text-orange-800">Sucursales</CardTitle>
             <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
-              <FileText className="h-5 w-5 text-white" />
+              <Building className="h-5 w-5 text-white" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-orange-900 mb-1">89</div>
+            <div className="text-3xl font-bold text-orange-900 mb-1">3</div>
             <p className="text-xs text-orange-600 flex items-center">
-              <TrendingUp className="w-3 h-3 mr-1 rotate-180" />
-              -5.2% desde el mes pasado
+              <CheckCircle className="w-3 h-3 mr-1" />
+              Todas activas
             </p>
           </CardContent>
         </Card>
@@ -76,7 +83,7 @@ export default function DashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-semibold text-purple-800">Ingresos del Mes</CardTitle>
             <div className="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center">
-              <TrendingUp className="h-5 w-5 text-white" />
+              <DollarSign className="h-5 w-5 text-white" />
             </div>
           </CardHeader>
           <CardContent>
@@ -90,7 +97,6 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Activity */}
         <Card className="border-0 shadow-lg">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
@@ -113,7 +119,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-slate-400 mt-1">Hace 2 minutos</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start space-x-4 p-3 bg-green-50 rounded-xl">
                 <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
                   <CheckCircle className="w-4 h-4 text-white" />
@@ -124,7 +130,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-slate-400 mt-1">Hace 15 minutos</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start space-x-4 p-3 bg-purple-50 rounded-xl">
                 <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Users className="w-4 h-4 text-white" />
@@ -135,7 +141,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-slate-400 mt-1">Hace 1 hora</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start space-x-4 p-3 bg-orange-50 rounded-xl">
                 <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
                   <AlertCircle className="w-4 h-4 text-white" />
@@ -150,7 +156,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Quick Stats */}
         <Card className="border-0 shadow-lg">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
@@ -169,7 +174,7 @@ export default function DashboardPage() {
                 </div>
                 <span className="text-2xl font-bold text-slate-800">234</span>
               </div>
-              
+
               <div className="flex justify-between items-center p-4 bg-slate-50 rounded-xl">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
@@ -179,7 +184,7 @@ export default function DashboardPage() {
                 </div>
                 <span className="text-2xl font-bold text-slate-800">45</span>
               </div>
-              
+
               <div className="flex justify-between items-center p-4 bg-slate-50 rounded-xl">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -189,11 +194,11 @@ export default function DashboardPage() {
                 </div>
                 <span className="text-2xl font-bold text-slate-800">12</span>
               </div>
-              
+
               <div className="flex justify-between items-center p-4 bg-slate-50 rounded-xl">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <Package className="w-5 h-5 text-orange-600" />
+                    <Building className="w-5 h-5 text-orange-600" />
                   </div>
                   <span className="font-medium text-slate-700">Sucursales activas</span>
                 </div>
@@ -204,7 +209,6 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* Quick Actions */}
       <Card className="border-0 shadow-lg">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-slate-800">Acciones Rápidas</CardTitle>
@@ -215,17 +219,17 @@ export default function DashboardPage() {
               <Package className="w-6 h-6" />
               <span>Nuevo Paquete</span>
             </Button>
-            
+
             <Button className="h-16 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 flex flex-col space-y-2">
               <Users className="w-6 h-6" />
               <span>Nuevo Cliente</span>
             </Button>
-            
+
             <Button className="h-16 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 flex flex-col space-y-2">
               <FileText className="w-6 h-6" />
               <span>Generar Factura</span>
             </Button>
-            
+
             <Button className="h-16 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 flex flex-col space-y-2">
               <TrendingUp className="w-6 h-6" />
               <span>Ver Reportes</span>

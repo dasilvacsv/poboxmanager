@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import type React from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -15,16 +16,18 @@ import {
   BarChart3,
   Warehouse,
   ChevronDown,
-  ChevronRight,
   LogOut,
   Search,
   Bell,
   User,
   Menu,
   X,
+  Target,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { Suspense } from "react"
 
 interface MenuItem {
   title: string
@@ -41,12 +44,42 @@ const menuItems: MenuItem[] = [
     href: "/dashboard",
   },
   {
+    title: "Gestión de Planes",
+    icon: <Target className="w-5 h-5" />,
+    children: [
+      { title: "Crear Planes", icon: null, href: "/dashboard/planes/crear" },
+      { title: "Gestionar Planes", icon: null, href: "/dashboard/planes" },
+      { title: "Asignar a Sucursales", icon: null, href: "/dashboard/planes/asignar" },
+    ],
+  },
+  {
+    title: "Paquetes",
+    icon: <Package className="w-5 h-5" />,
+    children: [
+      { title: "Estados de Paquetes", icon: null, href: "/dashboard/paquetes/estados" },
+      { title: "Inventario", icon: null, href: "/dashboard/paquetes/inventario" },
+      { title: "Registro Rápido", icon: null, href: "/dashboard/paquetes/registro" },
+    ],
+  },
+  {
+    title: "Facturación",
+    icon: <FileText className="w-5 h-5" />,
+    children: [
+      { title: "Facturación Automática", icon: null, href: "/dashboard/facturacion/automatica" },
+      { title: "Ver Facturas Pendientes", icon: null, href: "/dashboard/facturacion/pendientes", badge: "5" },
+      { title: "Ver Facturas Pagadas", icon: null, href: "/dashboard/facturacion/pagadas" },
+      { title: "Buscar Tracking", icon: null, href: "/dashboard/facturacion/tracking" },
+    ],
+  },
+  {
     title: "Configuración",
     icon: <Settings className="w-5 h-5" />,
     children: [
       { title: "Información de la Empresa", icon: null, href: "/dashboard/opciones/empresa" },
       { title: "Sucursales", icon: null, href: "/dashboard/opciones/sucursales" },
       { title: "Configuración Mensajes", icon: null, href: "/dashboard/opciones/mensajes" },
+      { title: "Notificaciones", icon: null, href: "/dashboard/opciones/notificaciones" },
+      { title: "Integraciones", icon: null, href: "/dashboard/opciones/integraciones" },
       { title: "Métodos de Pago", icon: null, href: "/dashboard/opciones/pagos" },
       { title: "Configuración de Correo", icon: null, href: "/dashboard/opciones/correo" },
       { title: "Direcciones", icon: null, href: "/dashboard/opciones/direcciones" },
@@ -67,20 +100,6 @@ const menuItems: MenuItem[] = [
       { title: "Empresas", icon: null, href: "/dashboard/clientes/empresas" },
       { title: "Clientes Pendientes", icon: null, href: "/dashboard/clientes/pendientes", badge: "3" },
       { title: "Notificaciones", icon: null, href: "/dashboard/clientes/notificaciones" },
-    ],
-  },
-  {
-    title: "Paquetes",
-    icon: <Package className="w-5 h-5" />,
-    children: [{ title: "Inventario", icon: null, href: "/dashboard/paquetes/inventario" }],
-  },
-  {
-    title: "Facturación",
-    icon: <FileText className="w-5 h-5" />,
-    children: [
-      { title: "Ver Facturas Pendientes", icon: null, href: "/dashboard/facturacion/pendientes", badge: "5" },
-      { title: "Ver Facturas Pagadas", icon: null, href: "/dashboard/facturacion/pagadas" },
-      { title: "Buscar Tracking", icon: null, href: "/dashboard/facturacion/tracking" },
     ],
   },
   {
@@ -118,6 +137,7 @@ export default function DashboardLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     const auth = localStorage.getItem("isAuthenticated")
@@ -134,6 +154,7 @@ export default function DashboardLayout({
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated")
+    localStorage.removeItem("userType")
     router.push("/")
   }
 
@@ -171,12 +192,12 @@ export default function DashboardLayout({
             }`}
           >
             <div className="flex items-center gap-3">
-              <div className="group-hover:scale-110 transition-transform duration-200">
-                {item.icon}
-              </div>
+              <div className="group-hover:scale-110 transition-transform duration-200">{item.icon}</div>
               <span className="font-medium">{item.title}</span>
             </div>
-            <div className={`transition-all duration-300 ease-out ${isExpanded ? 'rotate-180 text-blue-600' : 'group-hover:rotate-12'}`}>
+            <div
+              className={`transition-all duration-300 ease-out ${isExpanded ? "rotate-180 text-blue-600" : "group-hover:rotate-12"}`}
+            >
               <ChevronDown className="w-4 h-4" />
             </div>
           </button>
@@ -186,23 +207,25 @@ export default function DashboardLayout({
             className={`group flex items-center justify-between px-4 py-3.5 text-slate-600 hover:text-slate-800 rounded-2xl transition-all duration-300 ease-out hover:shadow-md border border-transparent ${
               level > 0 ? "ml-4" : ""
             } ${
-              isActive 
-                ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/30 hover:shadow-xl transform hover:scale-[1.02]" 
+              isActive
+                ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/30 hover:shadow-xl transform hover:scale-[1.02]"
                 : "hover:bg-gradient-to-r hover:from-slate-50 hover:to-slate-100 hover:border-slate-200/50"
             }`}
           >
             <div className="flex items-center gap-3">
-              <div className={`transition-all duration-200 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}>
+              <div className={`transition-all duration-200 ${isActive ? "scale-110" : "group-hover:scale-110"}`}>
                 {item.icon}
               </div>
               <span className="font-medium">{item.title}</span>
             </div>
             {item.badge && (
-              <div className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                isActive 
-                  ? 'bg-white bg-opacity-20 text-white' 
-                  : 'bg-red-100 text-red-600 group-hover:bg-red-500 group-hover:text-white'
-              } transition-all duration-200`}>
+              <div
+                className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                  isActive
+                    ? "bg-white bg-opacity-20 text-white"
+                    : "bg-red-100 text-red-600 group-hover:bg-red-500 group-hover:text-white"
+                } transition-all duration-200`}
+              >
                 {item.badge}
               </div>
             )}
@@ -221,77 +244,77 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setIsMobileMenuOpen(false)} />
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
       )}
 
-      {/* Sidebar */}
-      <div className={`${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:relative z-50 w-80 bg-white/80 backdrop-blur-xl shadow-2xl border-r border-slate-200/50 flex flex-col transition-transform duration-300 ease-out`}>
-        {/* Header */}
-        <div className="p-6 border-b border-slate-200/50 bg-gradient-to-r from-white to-slate-50">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                  <Package className="w-7 h-7 text-white" />
+      <Suspense fallback={<div>Loading...</div>}>
+        <div
+          className={`${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 fixed lg:relative z-50 w-80 bg-white/80 backdrop-blur-xl shadow-2xl border-r border-slate-200/50 flex flex-col transition-transform duration-300 ease-out`}
+        >
+          <div className="p-6 border-b border-slate-200/50 bg-gradient-to-r from-white to-slate-50">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                    <Package className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full border-2 border-white"></div>
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full border-2 border-white"></div>
+                <div>
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+                    PoboxManager
+                  </h1>
+                  <p className="text-sm text-slate-500">Panel de Control</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">PoboxManager</h1>
-                <p className="text-sm text-slate-500">Panel de Control</p>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="lg:hidden p-2 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-slate-50 to-slate-100/50 rounded-2xl border border-slate-200/50 hover:shadow-md transition-all duration-300">
+              <Avatar className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 ring-2 ring-blue-200">
+                <AvatarFallback className="text-white font-semibold bg-transparent">AD</AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <div className="font-semibold text-slate-800">Administrador</div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-slate-500">En línea</span>
+                </div>
               </div>
             </div>
-            <button 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="lg:hidden p-2 hover:bg-slate-100 rounded-lg transition-colors"
+          </div>
+
+          <nav className="flex-1 overflow-y-auto px-4 py-6 custom-scrollbar">
+            <div className="space-y-2">{menuItems.map((item) => renderMenuItem(item))}</div>
+          </nav>
+
+          <div className="p-4 border-t border-slate-200/50 bg-gradient-to-r from-white to-slate-50">
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="w-full flex items-center gap-3 h-12 border-slate-200 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:border-red-200 hover:text-red-600 transition-all duration-300 rounded-xl font-medium group"
             >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          
-          <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-slate-50 to-slate-100/50 rounded-2xl border border-slate-200/50 hover:shadow-md transition-all duration-300">
-            <Avatar className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 ring-2 ring-blue-200">
-              <AvatarFallback className="text-white font-semibold bg-transparent">AD</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <div className="font-semibold text-slate-800">Administrador</div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-slate-500">En línea</span>
-              </div>
-            </div>
+              <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+              Cerrar Sesión
+            </Button>
           </div>
         </div>
+      </Suspense>
 
-        {/* Navigation Menu */}
-        <nav className="flex-1 overflow-y-auto px-4 py-6 custom-scrollbar">
-          <div className="space-y-2">
-            {menuItems.map((item) => renderMenuItem(item))}
-          </div>
-        </nav>
-
-        {/* Logout Button */}
-        <div className="p-4 border-t border-slate-200/50 bg-gradient-to-r from-white to-slate-50">
-          <Button 
-            onClick={handleLogout} 
-            variant="outline" 
-            className="w-full flex items-center gap-3 h-12 border-slate-200 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:border-red-200 hover:text-red-600 transition-all duration-300 rounded-xl font-medium group"
-          >
-            <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
-            Cerrar Sesión
-          </Button>
-        </div>
-      </div>
-
-      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Bar */}
         <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 px-6 py-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <button 
+              <button
                 onClick={() => setIsMobileMenuOpen(true)}
                 className="lg:hidden p-2 hover:bg-slate-100 rounded-lg transition-colors"
               >
@@ -299,20 +322,24 @@ export default function DashboardLayout({
               </button>
               <div>
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                  {pathname === '/dashboard' ? 'Dashboard' : 
-                   pathname.split('/').pop()?.replace(/\b\w/g, l => l.toUpperCase())}
+                  {pathname === "/dashboard"
+                    ? "Dashboard"
+                    : pathname
+                        .split("/")
+                        .pop()
+                        ?.replace(/\b\w/g, (l) => l.toUpperCase())}
                 </h2>
                 <p className="text-sm text-slate-500 mt-0.5">
-                  {new Date().toLocaleDateString('es-ES', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
+                  {new Date().toLocaleDateString("es-ES", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="relative group">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 group-hover:text-slate-600 transition-colors" />
@@ -322,14 +349,24 @@ export default function DashboardLayout({
                   className="pl-10 pr-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 w-80 transition-all duration-300 hover:bg-slate-50 focus:bg-white backdrop-blur-sm"
                 />
               </div>
-              
+
               <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="sm" className="relative hover:bg-slate-100 rounded-xl p-3 group transition-all duration-200">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="relative hover:bg-slate-100 rounded-xl p-3 group transition-all duration-200"
+                >
                   <Bell className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-red-500 to-red-600 rounded-full text-xs text-white flex items-center justify-center font-medium shadow-lg">3</span>
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-red-500 to-red-600 rounded-full text-xs text-white flex items-center justify-center font-medium shadow-lg">
+                    3
+                  </span>
                 </Button>
-                
-                <Button variant="ghost" size="sm" className="hover:bg-slate-100 rounded-xl p-3 group transition-all duration-200">
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="hover:bg-slate-100 rounded-xl p-3 group transition-all duration-200"
+                >
                   <User className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 </Button>
               </div>
@@ -337,11 +374,8 @@ export default function DashboardLayout({
           </div>
         </header>
 
-        {/* Page Content */}
         <main className="flex-1 overflow-auto bg-gradient-to-br from-slate-50 to-slate-100">
-          <div className="animate-in fade-in-50 duration-500">
-            {children}
-          </div>
+          <div className="animate-in fade-in-50 duration-500">{children}</div>
         </main>
       </div>
 
